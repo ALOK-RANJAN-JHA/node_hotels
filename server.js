@@ -49,6 +49,9 @@ const app=express();
 // connect to databases
 const db=require('./db');
 
+require('dotenv').config();
+const PORT=process.env.PORT||3000;
+
 // make person model and perform all operation with this person 
 const Person=require('./modules/person');
 const menuItem=require('./modules/menuItem');
@@ -97,6 +100,7 @@ const menuRoutes=require('./routes/menuRoutes');
 // use the router
 app.use('/person',personRoutes);
 app.use('/menu',menuRoutes);
+
 
 app.listen(3000,()=>{
     console.log("server is listening at 3000")
