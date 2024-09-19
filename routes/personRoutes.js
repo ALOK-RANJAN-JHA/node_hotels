@@ -1,5 +1,6 @@
 const express=require('express');
 const router=express.Router();
+// make person model and perform all operation with this person 
 const Person=require('./../modules/person');
 
 // post rout to add person
@@ -35,7 +36,7 @@ router.get('/',async(req,res)=>{
         res.status(500).json({error:'internal server error'});
     }
 });
-router.get('//:worktype',async(req,res)=>{
+router.get('/:worktype',async(req,res)=>{
     try{
         const workType=req.params.worktype //exact the work type from the url parameter
         if(workType=='chef'||workType=='waiter'||workType=='manager'){

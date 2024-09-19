@@ -42,66 +42,50 @@
 // const jsonString=JSON.stringify(jsonObject);
 // console.log(jsonString);
 
-            //  creating a server
-const express =require('express');
-const app=express();
+//  creating a server
+const express = require('express');
+const app = express();
 
 // connect to databases
-const db=require('./db');
+const db = require('./db');
 
 require('dotenv').config();
-const PORT=process.env.PORT||3000;
+const PORT = process.env.PORT || 3000;
 
-// make person model and perform all operation with this person 
-const Person=require('./modules/person');
-const menuItem=require('./modules/menuItem');
+// middileware added
+const logRequest = (req, res, next) => {
+    console.log(`[${new Date().toLocaleString()}] Request Made to : ${req.originalUrl}`);
+    next(); //move on to the next phase
+}
 
-const bodyParser=require('body-parser');
+const passport = require('./auth');
+app.use(passport.initialize());
+
+const bodyParser = require('body-parser');
 app.use(bodyParser.json()); //req.body
 
+app.use(logRequest);
 
-app.get('/',function (req,res){
-   res.send("welcome to the resturant");
+const localAuthMiddleware = passport.authenticate('local', { session: false });
+app.get('/', localAuthMiddleware, function (req, res) {
+    res.send("welcome to the resturant");
 });
 
-
-// menuItem
-app.post('/menu',async(req,res)=>{
-    try{
-        const data=req.body;
-        const newMenu=new menuItem(data);
-        const response=await newMenu.save();
-        console.log('data saved successfully');
-        res.status(200).json(response);
-
-    }
-    catch(err){
-        console.log(err);
-        res.status(500).json({error:'Internal Error'});
-    }
+app.get('/login', localAuthMiddleware, function (req, res) {
+    res.send("welcome to Our hotel website");
 });
 
-app.get('/menu',async(req,res)=>{
-    try{
-        const data=await menuItem.find();
-        console.log('data fatched');
-        res.status(200).json(data);
-    }
-    catch(err){
-        console.log(err);
-        res.status(500).json({error:'Internal Error'});
-    }
-})
 
 
 // import router files
-const personRoutes=require('./routes/personRoutes');
-const menuRoutes=require('./routes/menuRoutes');
+const personRoutes = require('./routes/personRoutes');
+const menuRoutes = require('./routes/menuRoutes');
+const SignUpRoutes = require('./routes/SignUpRoutes');
 // use the router
-app.use('/person',personRoutes);
-app.use('/menu',menuRoutes);
+app.use('/person',localAuthMiddleware, personRoutes);
+app.use('/menu', menuRoutes);
+app.use('/',SignUpRoutes);
 
-
-app.listen(3000,()=>{
+app.listen(3000, () => {
     console.log("server is listening at 3000")
 });
