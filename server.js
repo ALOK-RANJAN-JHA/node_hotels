@@ -71,9 +71,9 @@ app.get('/', localAuthMiddleware, function (req, res) {
     res.send("welcome to the resturant");
 });
 
-app.get('/login', localAuthMiddleware, function (req, res) {
-    res.send("welcome to Our hotel website");
-});
+// app.get('/login', localAuthMiddleware, function (req, res) {
+//     res.send("welcome to Our hotel website");
+// });
 
 
 

@@ -3,6 +3,9 @@ const router=express.Router();
 // make person model and perform all operation with this person 
 const Person=require('./../modules/person');
 
+const {jwtAuthMiddleware,generateToken}=require('./../jwt');
+
+
 // post rout to add person
 router.post('/',async(req,res)=>{
     
@@ -25,7 +28,7 @@ router.post('/',async(req,res)=>{
 });
 
 // get rout to get person data
-router.get('/',async(req,res)=>{
+router.get('/',jwtAuthMiddleware,async(req,res)=>{
     try{
         const data= await Person.find();
         console.log('data fetched');
@@ -36,7 +39,7 @@ router.get('/',async(req,res)=>{
         res.status(500).json({error:'internal server error'});
     }
 });
-router.get('/:worktype',async(req,res)=>{
+router.get('/:worktype',jwtAuthMiddleware,async(req,res)=>{
     try{
         const workType=req.params.worktype //exact the work type from the url parameter
         if(workType=='chef'||workType=='waiter'||workType=='manager'){
